@@ -79,3 +79,44 @@ class SigninSerializer(serializers.ModelSerializer):
         return attrs
 
 
+
+class UserPermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model=UserPermission
+        fields=["id","name","code"]
+        read_only_fields = ('id',)
+
+
+class UserRoleListSerializer(serializers.ModelSerializer):
+
+    permissions  = serializers.SerializerMethodField()
+    class Meta:
+        model = UserRole
+        fields = ['id','name','permission','permissions']
+        read_only_fields = ['id','permissions']
+        extra_kwargs ={
+            'permission':{'write_only':True},
+        }
+    
+    def get_permissions(self, obj):
+        request = self.context.get('request')
+        if request.method =="GET":
+            permission = obj.permission.all().count()
+            return permission
+
+
+class UserRoleDetailSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = UserRole
+        fields = ['id','name','permission']
+        read_only_fields = ['id','name']
+
+
+    def __init__(self, instance=None, *args, **kwargs):
+        super().__init__(instance=instance,*args, **kwargs)
+        request = self.context.get('request')
+        if request and (request.method == 'PUT' or request.method == 'PATCH' or request.method=="DELETE"):
+            self.Meta.depth = 0
+        else:
+            self.Meta.depth = 1

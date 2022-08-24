@@ -10,7 +10,7 @@ class BaseUserAdmin(UserAdmin):
         (None, {'fields': ('first_name','last_name', 'password')}),
         (_('Personal info'), {'fields': ('is_owner', 'email','profile_picture')}),
         (_('Permissions'), {
-            'fields': ('is_approved','is_active', 'is_staff','is_verified','is_superuser'),
+            'fields': ('is_approved','is_active', 'is_staff','is_verified','is_superuser','user_role'),
         }),
         (_('Important dates'), {'fields': ('last_login',)}),
     )
@@ -23,5 +23,12 @@ class BaseUserAdmin(UserAdmin):
             'fields': ('email', 'password1', 'password2'),
         }),)
 
+class UserRoleAdmin(admin.ModelAdmin):
+    list_display=['id','name'] 
+
+
 admin.site.register(User,BaseUserAdmin)
+admin.site.register(UserPermission)
+admin.site.register(UserRole,UserRoleAdmin)
+
 
